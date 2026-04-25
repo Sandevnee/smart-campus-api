@@ -1,0 +1,492 @@
+{
+  "info": {
+    "_postman_id": "smart-campus-api-collection",
+    "name": "Smart Campus API \u2014 Full Demo Collection",
+    "description": "Complete Postman collection for the Smart Campus JAX-RS API demo video.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080/smart-campus-api/api/v1",
+      "type": "string"
+    },
+    {
+      "key": "newRoomId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "newSensorId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "maintenanceSensorId",
+      "value": "sensor-4",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "PART 1 \u2014 DISCOVERY",
+      "item": [
+        {
+          "name": "1.1 GET API Discovery (root)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200 OK', function() {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Response contains API name', function() {",
+                  "    var json = pm.response.json();",
+                  "    pm.expect(json.name).to.eql('Smart Campus API');",
+                  "});",
+                  "pm.test('Response contains hypermedia links', function() {",
+                  "    var json = pm.response.json();",
+                  "    pm.expect(json.links).to.have.property('rooms');",
+                  "    pm.expect(json.links).to.have.property('sensors');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}",
+              "host": [
+                "{{baseUrl}}"
+              ]
+            },
+            "description": "GET /api/v1 \u2014 Root discovery endpoint. DEMO FOCUS: Show the JSON metadata payload containing the API name, version, contact, timestamp, and hypermedia links to the rooms and sensors collections. This proves the API is self-describing."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "PART 2 \u2014 ROOM MANAGEMENT",
+      "item": [
+        {
+          "name": "2.1b POST Create New Room",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Automatically capture the new room ID from the Location header",
+                  "var location = pm.response.headers.get('Location');",
+                  "if (location) {",
+                  "    var parts = location.split('/');",
+                  "    pm.collectionVariables.set('newRoomId', parts[parts.length - 1]);",
+                  "    console.log('Captured new Room ID:', parts[parts.length - 1]);",
+                  "}",
+                  "pm.test('Status is 201 Created', function() {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "pm.test('Location header is present', function() {",
+                  "    pm.response.to.have.header('Location');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Library Hall\",\n  \"capacity\": 80\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/rooms",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "rooms"
+              ]
+            },
+            "description": "POST /rooms \u2014 Creates a new room. DEMO FOCUS: Show 201 Created status AND the Location header pointing to the new resource URI. The test script auto-saves the ID."
+          },
+          "response": []
+        },
+        {
+          "name": "2.1c GET Room by New ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/rooms/{{newRoomId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "rooms",
+                "{{newRoomId}}"
+              ]
+            },
+            "description": "GET /rooms/{id} \u2014 Retrieves the specific room just created using the captured ID. DEMO FOCUS: Show the full room JSON object returned."
+          },
+          "response": []
+        },
+        {
+          "name": "2.1d PUT Update Room",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Library Hall \u2014 Updated\",\n  \"capacity\": 100\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/rooms/{{newRoomId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "rooms",
+                "{{newRoomId}}"
+              ]
+            },
+            "description": "PUT /rooms/{id} \u2014 Updates the room name and capacity. Returns 200 OK with updated object."
+          },
+          "response": []
+        },
+        {
+          "name": "2.2a DELETE Room \u2014 Success (no sensors)",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/rooms/{{newRoomId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "rooms",
+                "{{newRoomId}}"
+              ]
+            },
+            "description": "DELETE /rooms/{id} \u2014 Deletes the newly created room (which has no sensors). DEMO FOCUS: Show 204 No Content. This proves clean deletion works."
+          },
+          "response": []
+        },
+        {
+          "name": "2.2b DELETE Room \u2014 409 Conflict (has sensors)",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/rooms/room-1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "rooms",
+                "room-1"
+              ]
+            },
+            "description": "DELETE /rooms/room-1 \u2014 room-1 has sensor-1 and sensor-2 linked. DEMO FOCUS: Show 409 Conflict with a structured JSON error body proving the integrity check works. This is a KEY demo moment."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "PART 3 \u2014 SENSORS & FILTERING",
+      "item": [
+        {
+          "name": "3.1a POST Sensor \u2014 422 Invalid roomId",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"TEMPERATURE\",\n  \"status\": \"ACTIVE\",\n  \"roomId\": \"room-INVALID\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/sensors",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "sensors"
+              ]
+            },
+            "description": "POST /sensors with a non-existent roomId. DEMO FOCUS: Show 422 Unprocessable Entity with structured JSON error body. This proves foreign-key validation is working."
+          },
+          "response": []
+        },
+        {
+          "name": "3.1b POST Sensor \u2014 201 Valid roomId",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var location = pm.response.headers.get('Location');",
+                  "if (location) {",
+                  "    var parts = location.split('/');",
+                  "    pm.collectionVariables.set('newSensorId', parts[parts.length - 1]);",
+                  "    console.log('Captured new Sensor ID:', parts[parts.length - 1]);",
+                  "}",
+                  "pm.test('Status is 201 Created', function() {",
+                  "    pm.response.to.have.status(201);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"CO2\",\n  \"status\": \"ACTIVE\",\n  \"roomId\": \"room-2\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/sensors",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "sensors"
+              ]
+            },
+            "description": "POST /sensors with a valid roomId (room-2). DEMO FOCUS: Contrast with the previous 422 \u2014 this one returns 201 with Location header."
+          },
+          "response": []
+        },
+        {
+          "name": "3.2b GET Sensors \u2014 filter by type=TEMPERATURE",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/sensors?type=TEMPERATURE",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "sensors"
+              ],
+              "query": [
+                {
+                  "key": "type",
+                  "value": "TEMPERATURE"
+                }
+              ]
+            },
+            "description": "GET /sensors?type=TEMPERATURE \u2014 DEMO FOCUS: Show only TEMPERATURE sensors returned. Then change the param to HUMIDITY and show a different result."
+          },
+          "response": []
+        },
+        {
+          "name": "3.2c GET Sensors \u2014 filter by type=HUMIDITY",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/sensors?type=HUMIDITY",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "sensors"
+              ],
+              "query": [
+                {
+                  "key": "type",
+                  "value": "HUMIDITY"
+                }
+              ]
+            },
+            "description": "GET /sensors?type=HUMIDITY \u2014 Contrast with the TEMPERATURE filter. Shows dynamic filtering working."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "PART 4 \u2014 SUB-RESOURCES (Readings)",
+      "item": [
+        {
+          "name": "4.1a GET Readings for sensor-1",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/sensors/sensor-1/readings",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "sensors",
+                "sensor-1",
+                "readings"
+              ]
+            },
+            "description": "GET /sensors/sensor-1/readings \u2014 DEMO FOCUS: Show the nested URL structure in Postman. Should return readings for sensor-1. Proves sub-resource locator pattern."
+          },
+          "response": []
+        },
+        {
+          "name": "4.2a POST New Reading to sensor-1 (ACTIVE)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"value\": 23.7\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/sensors/sensor-1/readings",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "sensors",
+                "sensor-1",
+                "readings"
+              ]
+            },
+            "description": "POST /sensors/sensor-1/readings \u2014 DEMO FOCUS: Show 201 Created. Then GET sensor-1 to prove currentValue updated to 23.7 (side-effect on parent)."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "PART 5 \u2014 ERROR HANDLING",
+      "item": [
+        {
+          "name": "5.1a 409 Conflict \u2014 DELETE room with sensors",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/rooms/room-1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "rooms",
+                "room-1"
+              ]
+            },
+            "description": "DELETE /rooms/room-1 \u2014 Triggers RoomNotEmptyException \u2192 409 Conflict. DEMO FOCUS: Show the structured JSON error body with message, status, and moreInfo fields. NOT a generic HTML error page."
+          },
+          "response": []
+        },
+        {
+          "name": "5.1b 422 Unprocessable \u2014 POST sensor with bad roomId",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"TEMPERATURE\",\n  \"status\": \"ACTIVE\",\n  \"roomId\": \"room-DOESNOTEXIST\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/sensors",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "sensors"
+              ]
+            },
+            "description": "POST /sensors with non-existent roomId \u2014 Triggers LinkedResourceNotFoundException \u2192 422. DEMO FOCUS: Show structured JSON body. Point out this is 422 (payload references invalid resource), NOT 404."
+          },
+          "response": []
+        },
+        {
+          "name": "5.1c 403 Forbidden \u2014 POST reading to MAINTENANCE sensor",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"value\": 99.9\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/sensors/sensor-4/readings",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "sensors",
+                "sensor-4",
+                "readings"
+              ]
+            },
+            "description": "POST reading to sensor-4 (status=MAINTENANCE) \u2014 Triggers SensorUnavailableException \u2192 403 Forbidden. DEMO FOCUS: Show structured JSON error body. sensor-4 has MAINTENANCE status in seed data."
+          },
+          "response": []
+        },
+        {
+          "name": "5.2 Trigger 500 \u2014 Global Safety Net",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/crash",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "crash"
+              ]
+            },
+            "description": "DEMO FOCUS FOR 500: To trigger a real 500 you need to temporarily break something in the code OR use the ThrowableExceptionMapper directly by calling a /crash endpoint. SEE VIDEO GUIDE for how to trigger a real 500 safely."
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}
