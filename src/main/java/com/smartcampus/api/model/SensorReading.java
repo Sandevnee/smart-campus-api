@@ -3,7 +3,7 @@ package com.smartcampus.api.model;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 /**
- * Represents a single reading captured by a sensor.
+ * This represents a single reading captured by a sensor.
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class SensorReading {

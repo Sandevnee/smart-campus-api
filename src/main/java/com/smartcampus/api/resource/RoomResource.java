@@ -83,7 +83,7 @@ public class RoomResource {
             throw new NotFoundException("Room not found: " + roomId);
         }
         LOGGER.info("Deleted room: " + roomId);
-        // 204 No Content: successful deletion with no response body
+        // 204 No Content - successful deletion with no response body
         return Response.noContent().build();
     }
 }

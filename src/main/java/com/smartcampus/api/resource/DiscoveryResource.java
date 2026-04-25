@@ -8,7 +8,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- * Discovery / root endpoint.
+ * This is the root endpoint.
  * GET /api/v1 - returns API metadata including name, version, contact, etc.
  */
 @Path("/")

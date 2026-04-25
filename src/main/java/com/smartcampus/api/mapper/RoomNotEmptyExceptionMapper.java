@@ -20,9 +20,9 @@ public class RoomNotEmptyExceptionMapper implements ExceptionMapper<RoomNotEmpty
         ErrorMessage error = new ErrorMessage(
                 exception.getMessage(),
                 409,
-                "https://developer.smartcampus.example/docs/errors#room-not-empty"
-        );
-        // 409 Conflict: the resource exists but its current state prevents the operation
+                "https://developer.smartcampus.example/docs/errors#room-not-empty");
+        // 409 Conflict - the resource exists but its current state prevents the
+        // operation
         return Response.status(Response.Status.CONFLICT)
                 .type(MediaType.APPLICATION_JSON)
                 .entity(error)

@@ -22,7 +22,7 @@ public class ThrowableExceptionMapper implements ExceptionMapper<Throwable> {
     public Response toResponse(Throwable exception) {
         // Log the full stack trace so it is visible in server logs
         LOGGER.log(Level.SEVERE, "Unhandled exception: " + exception.getMessage(), exception);
-        // Return a generic message — never expose internal details to the client
+        // Return a generic message
         ErrorMessage error = new ErrorMessage(
                 "An unexpected internal server error occurred.",
                 500,

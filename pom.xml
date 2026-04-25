@@ -50,7 +50,7 @@
             <version>${jersey.version}</version>
         </dependency>
 
-        <!-- Servlet API (provided by Tomcat) -->
+        <!-- Servlet API which is provided by Tomcat -->
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>

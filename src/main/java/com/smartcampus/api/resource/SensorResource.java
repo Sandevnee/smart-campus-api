@@ -29,24 +29,25 @@ public class SensorResource {
     private final DataStore store = DataStore.getInstance();
 
     /**
-     * GET /sensors[?type=<type>]  ->  list sensors, optionally filtered by type (case-insensitive).
+     * GET /sensors[?type=<type>] - list sensors, optionally filtered by type
      */
     @GET
     public List<Sensor> listSensors(@QueryParam("type") String type) {
         Collection<Sensor> all = store.getAllSensors();
         if (type == null || type.isEmpty()) {
-            // No filter provided — return all sensors
+            // return all sensors
             return new ArrayList<>(all);
         }
-        // Filter case-insensitively so "temperature" and "TEMPERATURE" both work
+        // This is case-insensitive.
         return all.stream()
                 .filter(s -> type.equalsIgnoreCase(s.getType()))
                 .collect(Collectors.toList());
     }
 
     /**
-     * POST /sensors  ->  create a sensor.
-     * Throws {@link LinkedResourceNotFoundException} (422) if the referenced room does not exist.
+     * POST /sensors - create a sensor.
+     * Throws {@link LinkedResourceNotFoundException} (422) if the referenced room
+     * does not exist.
      */
     @POST
     public Response createSensor(@Context UriInfo uriInfo, Sensor sensor) {
@@ -63,7 +64,7 @@ public class SensorResource {
     }
 
     /**
-     * GET /sensors/{sensorId}  ->  get a single sensor by ID.
+     * GET /sensors/{sensorId} - get a single sensor by ID.
      */
     @GET
     @Path("/{sensorId}")
@@ -76,7 +77,7 @@ public class SensorResource {
     }
 
     /**
-     * DELETE /sensors/{sensorId}  ->  remove a sensor and unlink it from its room.
+     * DELETE /sensors/{sensorId} - remove a sensor and unlink it from its room.
      */
     @DELETE
     @Path("/{sensorId}")
@@ -87,12 +88,12 @@ public class SensorResource {
             throw new NotFoundException("Sensor not found: " + sensorId);
         }
         LOGGER.info("Deleted sensor: " + sensorId);
-        // 204 No Content: successful deletion with no response body
+        // 204 No Content - successful deletion with no response body
         return Response.noContent().build();
     }
 
     /**
-     * Sub-resource locator: /sensors/{sensorId}/readings -> SensorReadingResource
+     * Sub-resource locator: /sensors/{sensorId}/readings - SensorReadingResource
      */
     @Path("/{sensorId}/readings")
     public SensorReadingResource getReadingResource(@PathParam("sensorId") String sensorId) {

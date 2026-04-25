@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Represents a physical room in the smart campus.
+ * This represents a physical room in the smart campus.
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Room {

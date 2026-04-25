@@ -20,9 +20,9 @@ public class SensorUnavailableExceptionMapper implements ExceptionMapper<SensorU
         ErrorMessage error = new ErrorMessage(
                 exception.getMessage(),
                 403,
-                "https://developer.smartcampus.example/docs/errors#sensor-unavailable"
-        );
-        // 403 Forbidden: the client is not allowed to post to a sensor under maintenance
+                "https://developer.smartcampus.example/docs/errors#sensor-unavailable");
+        // 403 Forbidden - the client is not allowed to post to a sensor under
+        // maintenance
         return Response.status(Response.Status.FORBIDDEN)
                 .type(MediaType.APPLICATION_JSON)
                 .entity(error)

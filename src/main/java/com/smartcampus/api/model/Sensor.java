@@ -11,12 +11,12 @@ public class Sensor {
     // Possible operational states of a sensor
     public enum Status {
         ACTIVE, // Sensor is working and accepting readings
-        MAINTENANCE, // Sensor is under maintenance; readings are blocked
+        MAINTENANCE, // Sensor is under maintenance, readings are blocked
         OFFLINE // Sensor is powered off or unreachable
     }
 
     private String id; // Unique sensor identifier
-    private String type; // Measurement category (e.g. TEMPERATURE, HUMIDITY)
+    private String type; // Measurement category such as TEMPERATURE, HUMIDITY
     private Status status;
     private Double currentValue; // Latest recorded measurement value
     private String roomId; // ID of the room where this sensor is installed

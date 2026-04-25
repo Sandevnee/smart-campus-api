@@ -31,7 +31,7 @@ public class SensorReadingResource {
         this.sensorId = sensorId;
     }
 
-    /** GET /sensors/{sensorId}/readings -> list all readings for the sensor */
+    /** GET /sensors/{sensorId}/readings - list all readings for the sensor */
     @GET
     public List<SensorReading> getReadings() {
         LOGGER.info("Fetching readings for sensor: " + sensorId);
@@ -39,18 +39,18 @@ public class SensorReadingResource {
     }
 
     /**
-     * POST /sensors/{sensorId}/readings -> add a reading.
+     * POST /sensors/{sensorId}/readings - add a reading.
      * Throws {@link SensorUnavailableException} (403) if the sensor is in
      * MAINTENANCE status.
      */
     @POST
     public Response addReading(@Context UriInfo uriInfo, SensorReading reading) {
-        // Re-check sensor existence
+        // Rechecking the sensor existence
         Sensor sensor = store.getSensorById(sensorId);
         if (sensor == null) {
             throw new NotFoundException("Sensor not found: " + sensorId);
         }
-        // Block readings for sensors under maintenance
+        // Blocking the readings for sensors which are under maintenance
         if (sensor.getStatus() == Sensor.Status.MAINTENANCE) {
             throw new SensorUnavailableException(
                     "Sensor " + sensorId + " is currently under maintenance. Readings cannot be recorded.");

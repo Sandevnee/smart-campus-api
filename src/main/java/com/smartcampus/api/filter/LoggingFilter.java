@@ -17,8 +17,7 @@ public class LoggingFilter implements ContainerRequestFilter, ContainerResponseF
 
     private static final Logger LOGGER = Logger.getLogger(LoggingFilter.class.getName());
 
-    // Runs before the request reaches any resource method — logs the HTTP verb and
-    // URI
+    // Runs before the request reaches any resource method
     @Override
     public void filter(ContainerRequestContext requestContext) throws IOException {
         LOGGER.info(String.format("Incoming request: %s %s",
